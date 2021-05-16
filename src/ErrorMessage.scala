@@ -1,3 +1,5 @@
+package ErrorMessage
+
 abstract sealed class SubsetCase()
 final case class This_isSubset() extends SubsetCase
 final case class Other_isSubset() extends SubsetCase
@@ -136,7 +138,7 @@ object ErrorMessage {
   importantRange is important to know what to higlight
   colour defines with which colour it should be highlighted
    */
-  private def give_line_of_code(what_exp:String,
+  def give_line_of_code(what_exp:String,
                                 codeLines:Array[String], column:Int, underl: Option[Underline],
                                 important_row_Begin:Int, important_row_End:Int,
                                 identationBefore: Int, indentationAfter: Int): String={
@@ -163,7 +165,7 @@ object ErrorMessage {
             (colour + codeLines(column) + Console.RESET, res.length, codeLines(column).length)
         }
         underlined_code + "\n" + give_char_n_times(pos_start_underline, ' ') +
-          colour + give_char_n_times(length_to_underline, char)+Console.RESET
+          colour + give_char_n_times(length_to_underline, char)+" " + what_exp + Console.RESET
       }
       case None => codeLines(column)
     }
