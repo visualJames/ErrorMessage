@@ -128,13 +128,14 @@ object ErrorMessage {
                         codeLines:Array[String], underl: Underline, important_column:Int,
                         important_row_Begin:Int, important_row_End:Int,
                         indentationBefore: Int, indentationAfter: Int,
-                        indentColour: AnsiColor_enum, indentColour_ImportantColumn: AnsiColor_enum): String ={
+                        indentColour: AnsiColor_enum, indentColour_ImportantColumn: AnsiColor_enum,
+                start_column:Int, end_column:Int): String ={
     val box_indent = "error: ".length-(indentationBefore+1)
     val outline = giveIndent(None,indentColour, indentationBefore, 0) +
       give_char_n_times(box_indent, '-', Some(indentColour))+"\n"
 
     var res =""
-    for(i <- 0 until codeLines.length){
+    for(i <- start_column until end_column){
       val (uL,iC) =if(i==important_column){
         (Some(underl),indentColour_ImportantColumn)
       }else{

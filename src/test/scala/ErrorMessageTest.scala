@@ -26,7 +26,9 @@ class ErrorMessageTest extends  AnyFlatSpec {
     val important_row_end = 1
     val indentionBefore = 2
     val indentionAfter = 1
-    val res = ErrorMessage.give_code(what_exp, codeLines, underline, column,important_row_begin, important_row_end, indentionBefore, indentionAfter,CYAN(), BLUE())
+    val res = ErrorMessage.give_code(what_exp, codeLines, underline, column,important_row_begin,
+      important_row_end, indentionBefore, indentionAfter,CYAN(), BLUE(),
+      0,codeLines.length)
     println(res)
   }
 
@@ -40,7 +42,9 @@ class ErrorMessageTest extends  AnyFlatSpec {
     val important_row_end = codeLines(1).length
     val indentionBefore = 2
     val indentionAfter = 1
-    val res = ErrorMessage.give_code(what_exp, codeLines, underline, column,important_row_begin, important_row_end, indentionBefore, indentionAfter,CYAN(), BLUE())
+    val res = ErrorMessage.give_code(what_exp, codeLines, underline, column,
+      important_row_begin, important_row_end, indentionBefore, indentionAfter,CYAN(), BLUE(),
+      1,2)
     println(res)
   }
 }
