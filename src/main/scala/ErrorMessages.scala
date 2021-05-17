@@ -1,3 +1,5 @@
+import java.nio.file.Paths
+
 abstract sealed class SubsetCase()
 final case class This_isSubset() extends SubsetCase
 final case class Other_isSubset() extends SubsetCase
@@ -119,18 +121,33 @@ object ErrorMessage {
     override def toString: String = s"($c,$r)"
     def ==(end:Location) = this.column == end.column && this.row == end.row
   }
-  def give_error(): String ={
-    ""
+  def give_error(fileName:String, what_exp:String,name_of_error:String,start_column:Int, end_column:Int,
+                 codeLines:Array[String], underl: Underline, important_column:Int,
+                 important_row_Begin:Int, important_row_End:Int,
+                 indentationBefore: Int=2, indentationAfter: Int=1,
+                 indentColour: AnsiColor_enum=CYAN(), indentColour_ImportantColumn: AnsiColor_enum=BLUE(),
+                 ): String ={
+    val c = important_column+1
+    val r = important_row_Begin+1
+    val filePath = Paths.get(fileName+":"+c+":"+r).toUri
+    val res = indentColour_ImportantColumn.toString + name_of_error + Console.RESET+": "+
+      what_exp+": `"+codeLines(important_column).substring(important_row_Begin,important_row_End)+"`"+"\n"+
+      give_char_n_times(important_column.toString.length, ' ', None)+
+      indentColour_ImportantColumn.toString+"-->"+Console.RESET+" "+filePath+"\n"
+
+    res + give_code(what_exp,name_of_error,start_column,end_column,
+      codeLines,underl,important_column,important_row_Begin,important_row_End,
+      indentationBefore,indentationAfter,indentColour,indentColour_ImportantColumn
+      )
   }
 
   //Todo:if important column: BLUE, else CYAN as a colour for indentation
-  def give_code(what_exp:String,
+  private def give_code(what_exp:String, name_error:String,start_column:Int, end_column:Int,
                         codeLines:Array[String], underl: Underline, important_column:Int,
                         important_row_Begin:Int, important_row_End:Int,
                         indentationBefore: Int, indentationAfter: Int,
-                        indentColour: AnsiColor_enum, indentColour_ImportantColumn: AnsiColor_enum,
-                start_column:Int, end_column:Int): String ={
-    val box_indent = "error: ".length-(indentationBefore+1)
+                        indentColour: AnsiColor_enum, indentColour_ImportantColumn: AnsiColor_enum): String ={
+    val box_indent = name_error.length+": ".length-(indentationBefore+1)
     val outline = giveIndent(None,indentColour, indentationBefore, 0) +
       give_char_n_times(box_indent, '-', Some(indentColour))+"\n"
 
@@ -152,7 +169,7 @@ object ErrorMessage {
   abstract sealed class Underline()
   final case class Underline_With_Char(char:Char, colour: AnsiColor_enum) extends Underline
 
-  def giveIndent(col:Option[Int], colour: AnsiColor_enum,
+  private def giveIndent(col:Option[Int], colour: AnsiColor_enum,
                  indentationBefore:Int, indentationAfter:Int,
                          charToSeperate:Char='|', charToIndent:Char=' '):String={
     col match {
@@ -172,7 +189,7 @@ object ErrorMessage {
   importantRange is important to know what to higlight
   colour defines with which colour it should be highlighted
    */
-  def give_line_of_code(what_exp:String,
+  private def give_line_of_code(what_exp:String,
                         codeLines:Array[String], column:Int, underl: Option[Underline],
                         important_row_Begin:Int, important_row_End:Int,
                         indentationBefore: Int, indentationAfter: Int, indentColour: AnsiColor_enum): String={
