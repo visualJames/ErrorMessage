@@ -1,5 +1,3 @@
-package ErrorMessage
-
 abstract sealed class SubsetCase()
 final case class This_isSubset() extends SubsetCase
 final case class Other_isSubset() extends SubsetCase
@@ -139,9 +137,9 @@ object ErrorMessage {
   colour defines with which colour it should be highlighted
    */
   def give_line_of_code(what_exp:String,
-                                codeLines:Array[String], column:Int, underl: Option[Underline],
-                                important_row_Begin:Int, important_row_End:Int,
-                                identationBefore: Int, indentationAfter: Int): String={
+                        codeLines:Array[String], column:Int, underl: Option[Underline],
+                        important_row_Begin:Int, important_row_End:Int,
+                        identationBefore: Int, indentationAfter: Int): String={
     val row_begin = 0
     val row_end = codeLines(column).length
     val viewed = Range(Location(column, row_begin),Location(column, row_end))
@@ -150,7 +148,7 @@ object ErrorMessage {
     val real_indentationBefore = identationBefore-column.toString.size
     if(real_indentationBefore<=0) throw new IllegalArgumentException("ident was chosen too small")
     var res = Console.BLUE + column + give_char_n_times(real_indentationBefore, ' ') +
-              "|" + give_char_n_times(indentationAfter, ' ') + Console.RESET
+      "|" + give_char_n_times(indentationAfter, ' ') + Console.RESET
     val res_of_code_underlining = underl match {
       case Some(Underline_With_Char(char, colour)) => {
         val (underlined_code, pos_start_underline,length_to_underline) = which_case match {
