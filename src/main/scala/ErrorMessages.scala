@@ -85,7 +85,7 @@ object ErrorMessage {
 
     def isSubsetOf(other:Range):Boolean={
       if(this.begin.column>=other.begin.column){
-        if(this.end.column<=other.end.column){
+        if(this.end.column<other.end.column){
           true
         }else{
           if(this.end.row<=other.end.row){
@@ -102,7 +102,7 @@ object ErrorMessage {
     def whoIsSubset(other:Range):SubsetCase={
       if(this.isSubsetOf(other)){
         This_isSubset()
-      }else if(this.isSubsetOf(other)){
+      }else if(other.isSubsetOf(this)){
         Other_isSubset()
       }else{
         None_isSubset()
@@ -139,13 +139,13 @@ object ErrorMessage {
   def give_line_of_code(what_exp:String,
                         codeLines:Array[String], column:Int, underl: Option[Underline],
                         important_row_Begin:Int, important_row_End:Int,
-                        identationBefore: Int, indentationAfter: Int): String={
+                        indentationBefore: Int, indentationAfter: Int): String={
     val row_begin = 0
     val row_end = codeLines(column).length
     val viewed = Range(Location(column, row_begin),Location(column, row_end))
     val important = Range(Location(column, important_row_Begin),Location(column, important_row_End))
     val which_case= viewed.whoIsSubset(important)
-    val real_indentationBefore = identationBefore-column.toString.size
+    val real_indentationBefore = indentationBefore-column.toString.size
     if(real_indentationBefore<=0) throw new IllegalArgumentException("ident was chosen too small")
     var res = Console.BLUE + column + give_char_n_times(real_indentationBefore, ' ') +
       "|" + give_char_n_times(indentationAfter, ' ') + Console.RESET
@@ -155,24 +155,27 @@ object ErrorMessage {
           case This_isSubset() =>
             throw new IllegalStateException("this should not happen, because the whole line is always a overset to an part of the line")
           case Other_isSubset() =>
+            println("other_IsSubset:'"+res+"'")
             val code = codeLines(column)
             (code.substring(0,important_row_Begin)+ colour+code.substring(important_row_Begin,important_row_End)+
-              Console.RESET+code.substring(important_row_End), res.length+important_row_Begin,
+              Console.RESET+code.substring(important_row_End), important_row_Begin,
               code.substring(important_row_Begin,important_row_End).length)
           case None_isSubset() =>
-            (colour + codeLines(column) + Console.RESET, res.length, codeLines(column).length)
+            (colour + codeLines(column) + Console.RESET, 0, codeLines(column).length)
         }
-        underlined_code + "\n" + give_char_n_times(pos_start_underline, ' ') +
+        val beginNextLineWithoutNumber = Console.BLUE + give_char_n_times(indentationBefore, ' ') +
+          "|" + give_char_n_times(indentationAfter, ' ') + Console.RESET
+        underlined_code + "\n" + beginNextLineWithoutNumber + give_char_n_times(pos_start_underline, ' ') +
           colour + give_char_n_times(length_to_underline, char)+" " + what_exp + Console.RESET
       }
       case None => codeLines(column)
     }
-    res + "\n"
+    res + res_of_code_underlining + "\n"
   }
 
 
   def give_char_n_times(n:Int, c:Char): String={
-    val arr = Array.fill(n)('^')
+    val arr = Array.fill(n)(c)
     String.valueOf(arr)
   }
 }
