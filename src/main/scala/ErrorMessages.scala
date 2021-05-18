@@ -121,7 +121,7 @@ object ErrorMessage {
     override def toString: String = s"($c,$r)"
     def ==(end:Location) = this.column == end.column && this.row == end.row
   }
-  def give_error(fileName:String, what_exp:String,name_of_error:String,start_column:Int, end_column:Int,
+  def give_error(fileName:String, description_error:String, what_exp:String,name_of_error:String,start_column:Int, end_column:Int,
                  codeLines:Array[String], underl: Underline, important_column:Int,
                  important_row_Begin:Int, important_row_End:Int,
                  indentationBefore: Int=2, indentationAfter: Int=1,
@@ -131,7 +131,7 @@ object ErrorMessage {
     val r = important_row_Begin+1
     val filePath = Paths.get(fileName+":"+c+":"+r).toUri
     val res = indentColour_ImportantColumn.toString + name_of_error + Console.RESET+": "+
-      what_exp+": `"+codeLines(important_column).substring(important_row_Begin,important_row_End)+"`"+"\n"+
+      description_error+" `"+codeLines(important_column).substring(important_row_Begin,important_row_End)+"`"+"\n"+
       give_char_n_times(important_column.toString.length, ' ', None)+
       indentColour_ImportantColumn.toString+"-->"+Console.RESET+" "+filePath+"\n"
 
