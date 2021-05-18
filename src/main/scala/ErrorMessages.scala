@@ -121,7 +121,8 @@ object ErrorMessage {
     override def toString: String = s"($c,$r)"
     def ==(end:Location) = this.column == end.column && this.row == end.row
   }
-  def give_error(fileName:String, description_error:String, what_exp:String,name_of_error:String,start_column:Int, end_column:Int,
+  def give_error(fileName:String, description_error:String, what_exp:String,help:Option[String],
+                 name_of_error:String,start_column:Int, end_column:Int,
                  codeLines:Array[String], underl: Underline, important_column:Int,
                  important_row_Begin:Int, important_row_End:Int,
                  indentationBefore: Int=2, indentationAfter: Int=1,
@@ -135,10 +136,14 @@ object ErrorMessage {
       give_char_n_times(important_column.toString.length, ' ', None)+
       indentColour_ImportantColumn.toString+"-->"+Console.RESET+" "+filePath+"\n"
 
+    val help_message = help match {
+      case Some(h) => giveIndent(None, BLUE(), indentationBefore,indentationAfter) + "help: " + h +"\n"
+      case None => ""
+    }
     res + give_code(what_exp,name_of_error,start_column,end_column,
       codeLines,underl,important_column,important_row_Begin,important_row_End,
       indentationBefore,indentationAfter,indentColour,indentColour_ImportantColumn
-      )
+      ) + help_message
   }
 
   //Todo:if important column: BLUE, else CYAN as a colour for indentation
